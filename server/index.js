@@ -40,15 +40,36 @@ app.get('/api/customers', async (req, res) => {
   }
 });
 
-app.get('/api/customers/:id', async (req, res) => {
-  try {
-    const customer = await customersCollection.findOne({ _id: new ObjectId(req.params.id) });
-    if (!customer) return res.status(404).json({ message: 'Customer not found' });
-    res.json(customer);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+
+
+app.get('/api/customers/:index', async (req, res) => {
+	try {
+	  // Parse the index from the URL
+	  const index = parseInt(req.params.index, 10);
+  
+	  // Validate the index
+	  if (isNaN(index) || index < 0) {
+		return res.status(400).json({ message: 'Invalid customer index' });
+	  }
+  
+	  // Retrieve the customer by skipping documents and limiting the result to one document
+	  const customersCursor = customersCollection.find({});
+	  const customers = await customersCursor.skip(index).limit(1).toArray();
+  
+	  // If no customer is found, return a 404 error
+	  if (customers.length === 0) {
+		return res.status(404).json({ message: 'Customer not found' });
+	  }
+  
+	  // Send back the found customer
+	  res.json(customers[0]);
+	} catch (err) {
+	  // Handle server errors
+	  res.status(500).json({ message: err.message });
+	}
+  });
+
+  
 
 // Routes for products
 app.get('/api/products', async (req, res) => {
@@ -60,15 +81,33 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
-app.get('/api/products/:id', async (req, res) => {
-  try {
-    const product = await productsCollection.findOne({ _id: new ObjectId(req.params.id) });
-    if (!product) return res.status(404).json({ message: 'Product not found' });
-    res.json(product);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+
+app.get('/api/products/:index', async (req, res) => {
+	try {
+	  // Parse the index from the URL
+	  const index = parseInt(req.params.index, 10);
+  
+	  // Validate the index
+	  if (isNaN(index) || index < 0) {
+		return res.status(400).json({ message: 'Invalid product index' });
+	  }
+  
+	  // Retrieve the product by skipping documents and limiting the result to one document
+	  const productsCursor = productsCollection.find({});
+	  const products = await productsCursor.skip(index).limit(1).toArray();
+  
+	  // If no product is found, return a 404 error
+	  if (products.length === 0) {
+		return res.status(404).json({ message: 'Product not found' });
+	  }
+  
+	  // Send back the found product
+	  res.json(products[0]);
+	} catch (err) {
+	  // Handle server errors
+	  res.status(500).json({ message: err.message });
+	}
+  });
 
 // Routes for orders
 app.get('/api/orders', async (req, res) => {
@@ -81,23 +120,40 @@ app.get('/api/orders', async (req, res) => {
   }
 });
 
-app.get('/api/orders/:id', async (req, res) => {
-  try {
-    const order = await ordersCollection.findOne({ _id: new ObjectId(req.params.id) });
-    if (!order) return res.status(404).json({ message: 'Order not found' });
-    res.json(order);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+
+app.get('/api/orders/:index', async (req, res) => {
+	console.log("hello");
+    try {
+        // Parse the index from the URL
+        const index = parseInt(req.params.index, 10);
+
+		console.log("parsed",index);
+        // Validate the index
+        if (isNaN(index) || index < 0) {
+            return res.status(400).json({ message: 'Invalid order index' });
+        }
+
+        // Ensure that you retrieve the document correctly
+        const ordersCursor = ordersCollection.find({}); // Find all orders without filtering on `_id`
+        const orders = await ordersCursor.skip(index).limit(1).toArray();
+
+        // Check if an order was found
+        if (orders.length === 0) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        // Return the found order
+        res.json(orders[0]);
+    } catch (err) {
+        // Handle errors and return a 500 status if something goes wrong
+        res.status(500).json({ message: err.message });
+    }
 });
+
+
+
 
 app.listen(3001, () => {
   console.log('Server is running on port 3001');
 });
 
-/* process.on('SIGINT', async () => {
-  await client.close();
-  console.log('MongoDB connection closed');
-  process.exit(0);
-});
- */
