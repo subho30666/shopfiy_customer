@@ -4,13 +4,14 @@ export async function customer_transformer(data){
     const new_customer=await getNewCustomersOverTime(array)
     const new_customer_growth=await getCumulativeCustomersOverTime(array)
     const city=await groupByCities(array)
+    const city1=await groupByCities1(array)
     // const dailyRepeatCustomers = await getRepeatCustomers(array, 'daily');
     // const monthlyRepeatCustomers = await getRepeatCustomers(array, 'monthly');
     // const quarterlyRepeatCustomers = await getRepeatCustomers(array, 'quarterly');
     // const yearlyRepeatCustomers = await getRepeatCustomers(array, 'yearly');
     // console.log("dailyrepeat",dailyRepeatCustomers);
 
-    return {new_customer,new_customer_growth,array,city,/* dailyRepeatCustomers,monthlyRepeatCustomers,quarterlyRepeatCustomers,yearlyRepeatCustomers */}
+    return {new_customer,new_customer_growth,array,city,city1,/* dailyRepeatCustomers,monthlyRepeatCustomers,quarterlyRepeatCustomers,yearlyRepeatCustomers */}
 }
 
 async function transformTimestamps(timestamps) {
@@ -87,6 +88,7 @@ async function groupByCities(data) {
     // Step 1: Group by city and count customers
     const customersByCity = data.reduce((acc, customer) => {
         const city = customer.city;
+        const state = customer.province;
         if (!acc[city]) {
             acc[city] = 0;
         }
@@ -98,6 +100,29 @@ async function groupByCities(data) {
     const result = Object.keys(customersByCity).map(city => ({
         city,
         count: customersByCity[city]
+    }));
+
+    return result;
+}
+
+async function groupByCities1(data) {
+    // Step 1: Group by city and count customers
+    const customersByCity = data.reduce((acc, customer) => {
+        const city = customer.city;
+        const state = customer.province.toLowerCase();
+        if (!acc[city]) {
+            acc[city] = { count: 0, state: state };
+        }
+        acc[city].count++;
+        return acc;
+    }, {});
+
+    console.log("reslut",customersByCity);
+    // Step 2: Prepare result
+    const result = Object.keys(customersByCity).map(city => ({
+        city,
+        state: customersByCity[city].state,
+        count: customersByCity[city].count
     }));
 
     return result;

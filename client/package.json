@@ -12,6 +12,7 @@
   "dependencies": {
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
+    "@highcharts/map-collection": "^2.3.0",
     "@mui/material": "^5.16.7",
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
     "@mui/x-charts": "^7.13.0",

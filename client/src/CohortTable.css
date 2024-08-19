@@ -1,0 +1,138 @@
+.table-container {
+    max-height: 500px; /* Adjust the height as needed */
+    overflow-y: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+  }
+  
+  .cohort-table, .inner-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .cohort-table th, .cohort-table td, .inner-table th, .inner-table td {
+    padding: 12px 15px;
+    text-align: left;
+  }
+  
+  .cohort-table th {
+    background-color: #e91e63; /* Magenta color */
+    color: white;
+    position: sticky;
+    top: 0;
+  }
+  
+  .inner-table th {
+    background-color: #f8bbd0; /* Lighter shade of magenta */
+  }
+  
+  .cohort-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .cohort-table tr:hover {
+    background-color: #ddd;
+  }
+  
+  .cohort-table th:first-child, .cohort-table td:first-child, .inner-table th:first-child, .inner-table td:first-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
+  
+  .cohort-table th:last-child, .cohort-table td:last-child, .inner-table th:last-child, .inner-table td:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+  
+  button {
+    background-color: #e91e63; /* Magenta color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  button:hover {
+    background-color: #d81b60;
+  }
+  
+  .inner-table-container {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 10px;
+  }
+  
+  .inner-table-title {
+    color: #e91e63; /* Light magenta color */
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  /* Scrollbar styling for WebKit browsers */
+  .table-container::-webkit-scrollbar, .inner-table-container::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+    border-radius: 20px;
+  }
+  
+  .table-container::-webkit-scrollbar-track, .inner-table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 20px;
+  }
+  
+  .table-container::-webkit-scrollbar-thumb, .inner-table-container::-webkit-scrollbar-thumb {
+    background-color: #e91e63; /* Magenta color */
+    border-radius: 20px;
+    border: 13px solid #e91e63;
+  }
+  
+  /* Scrollbar styling for Firefox */
+  .table-container, .inner-table-container {
+    scrollbar-width: thin;
+    scrollbar-color: #e91e63 #f1f1f1;
+  }
+  
+  .table-container::-moz-scrollbar, .inner-table-container::-moz-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .table-container::-moz-scrollbar-track, .inner-table-container::-moz-scrollbar-track {
+    background: #f05a8c;
+    border-radius: 20px;
+  }
+  
+  .table-container::-moz-scrollbar-thumb, .inner-table-container::-moz-scrollbar-thumb {
+    background-color: #e91e63; /* Magenta color */
+    border-radius: 20px;
+    border: 10px solid #e91e63;
+  }
+  
+  .scrollable-container {
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #e91e63 #f1f1f1;
+  
+    /* WebKit */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+  
+    ::-webkit-scrollbar-track {
+      background: #f05a8c;
+      border-radius: 20px;
+    }
+  
+    ::-webkit-scrollbar-thumb {
+      background-color: #e91e63;
+      border-radius: 20px;
+    }
+  }
