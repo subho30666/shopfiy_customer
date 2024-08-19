@@ -5,6 +5,7 @@ import { sales_transformer } from './helper/sales_transformer.js';
 import { customer_transformer } from './helper/customer_transformer.js';
 import { repeat_transformer } from './helper/repeat_transformer.js';
 import { test1 } from './helper/test1.js';
+import { cohort_transformer } from './helper/cohort_transformer.js';
 
 const app = express();
 app.use(cors());
@@ -174,6 +175,17 @@ app.get('/api/repeat', async (req, res) => {
   }
 });
 
+// route to get cohort
+app.get('/api/cohort', async (req, res) => {
+  try {
+    const orders = await ordersCollection.find().sort({ created_at: 1 }).toArray();   
+    const cohort_results=await cohort_transformer(orders)
+    res.json(cohort_results);
+  } catch (err) {
+    console.error("Error fetching orders:", err.message); // Log the error message
+    res.status(500).json({ message: err.message });
+  }
+});
 
 
 app.get('/api/orders/:index', async (req, res) => {
