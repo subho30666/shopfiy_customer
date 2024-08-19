@@ -1,6 +1,8 @@
 import express from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
 import cors from 'cors';
+import { sales_transformer } from './helper/sales_transformer.js';
+import { customer_transformer } from './helper/customer_transformer.js';
 
 const app = express();
 app.use(cors());
@@ -33,8 +35,9 @@ connectToDatabase();
 // Routes for customers
 app.get('/api/customers', async (req, res) => {
   try {
-    const customers = await customersCollection.find().toArray();
-    res.json(customers);
+    const customers = await customersCollection.find({}, { projection: { created_at: 1,first_name:1,last_name:1,'default_address.city':1,'default_address.province':1,'default_address.country':1,'default_address.zip':1} }).sort({created_at:1}).toArray();
+    const customer_data=await customer_transformer(customers)
+    res.json(customer_data);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -112,8 +115,10 @@ app.get('/api/products/:index', async (req, res) => {
 // Routes for orders
 app.get('/api/orders', async (req, res) => {
   try {
-    const orders = await ordersCollection.find().toArray();
-    res.json(orders);
+    const orders = await ordersCollection.find({}, { projection: { created_at: 1,'total_price_set.shop_money.amount': 1, } }).sort({ created_at: 1 }).toArray();
+   const data=await sales_transformer(orders)
+
+    res.json(data);
   } catch (err) {
     console.error("Error fetching orders:", err.message); // Log the error message
     res.status(500).json({ message: err.message });
