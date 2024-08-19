@@ -3,6 +3,8 @@ import { MongoClient, ObjectId } from 'mongodb';
 import cors from 'cors';
 import { sales_transformer } from './helper/sales_transformer.js';
 import { customer_transformer } from './helper/customer_transformer.js';
+import { repeat_transformer } from './helper/repeat_transformer.js';
+import { test1 } from './helper/test1.js';
 
 const app = express();
 app.use(cors());
@@ -38,6 +40,17 @@ app.get('/api/customers', async (req, res) => {
     const customers = await customersCollection.find({}, { projection: { created_at: 1,first_name:1,last_name:1,'default_address.city':1,'default_address.province':1,'default_address.country':1,'default_address.zip':1} }).sort({created_at:1}).toArray();
     const customer_data=await customer_transformer(customers)
     res.json(customer_data);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Routes for full customers 
+app.get('/api/full/customers', async (req, res) => {
+  try {
+    const customers = await customersCollection.find().sort({created_at:1}).toArray();
+    
+    res.json(customers);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -124,6 +137,43 @@ app.get('/api/orders', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+// Routes for full orders
+app.get('/api/full/orders', async (req, res) => {
+  try {
+    const orders = await ordersCollection.find().sort({ created_at: 1 }).toArray();   
+
+    res.json(orders);
+  } catch (err) {
+    console.error("Error fetching orders:", err.message); // Log the error message
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// delete this 
+app.get('/api/test', async (req, res) => {
+  try {
+    const orders = await ordersCollection.find().sort({ created_at: 1 }).toArray();   
+    const tr=test1(orders)
+    res.json(tr);
+  } catch (err) {
+    console.error("Error fetching orders:", err.message); // Log the error message
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Routes for repeat orders
+app.get('/api/repeat', async (req, res) => {
+  try {
+    const orders = await ordersCollection.find({}, { projection: { created_at: 1,email:1,'customer.first_name': 1,'customer.last_name':1 } }).sort({ created_at: 1 }).toArray();   
+    const repeat_customers=await repeat_transformer(orders)
+    res.json(repeat_customers);
+  } catch (err) {
+    console.error("Error fetching orders:", err.message); // Log the error message
+    res.status(500).json({ message: err.message });
+  }
+});
+
 
 
 app.get('/api/orders/:index', async (req, res) => {

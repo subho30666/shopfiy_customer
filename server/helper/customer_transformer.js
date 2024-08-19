@@ -4,8 +4,13 @@ export async function customer_transformer(data){
     const new_customer=await getNewCustomersOverTime(array)
     const new_customer_growth=await getCumulativeCustomersOverTime(array)
     const city=await groupByCities(array)
+    // const dailyRepeatCustomers = await getRepeatCustomers(array, 'daily');
+    // const monthlyRepeatCustomers = await getRepeatCustomers(array, 'monthly');
+    // const quarterlyRepeatCustomers = await getRepeatCustomers(array, 'quarterly');
+    // const yearlyRepeatCustomers = await getRepeatCustomers(array, 'yearly');
+    // console.log("dailyrepeat",dailyRepeatCustomers);
 
-    return {new_customer,new_customer_growth,array,city}
+    return {new_customer,new_customer_growth,array,city,/* dailyRepeatCustomers,monthlyRepeatCustomers,quarterlyRepeatCustomers,yearlyRepeatCustomers */}
 }
 
 async function transformTimestamps(timestamps) {
@@ -96,4 +101,44 @@ async function groupByCities(data) {
     }));
 
     return result;
+}
+
+async function getRepeatCustomers(data, timeFrame) {
+    // Helper function to format date based on time frame
+    function formatDate(date, timeFrame) {
+        const d = new Date(date);
+        switch (timeFrame) {
+            case 'daily':
+                return d.toISOString().split('T')[0]; // YYYY-MM-DD
+            case 'monthly':
+                return `${d.getFullYear()}-${d.getMonth() + 1}`; // YYYY-MM
+            case 'quarterly':
+                return `${d.getFullYear()}-Q${Math.floor(d.getMonth() / 3) + 1}`; // YYYY-QN
+            case 'yearly':
+                return d.getFullYear().toString(); // YYYY
+            default:
+                return d.toISOString().split('T')[0];
+        }
+    }
+
+    // Step 1: Group by customer and time frame
+    const purchasesByCustomer = data.reduce((acc, purchase) => {
+        const customer = purchase.full_name;
+        const timeKey = formatDate(purchase.day, timeFrame);
+        if (!acc[customer]) {
+            acc[customer] = {};
+        }
+        if (!acc[customer][timeKey]) {
+            acc[customer][timeKey] = 0;
+        }
+        acc[customer][timeKey]++;
+        return acc;
+    }, {});
+
+    // Step 2: Identify repeat customers
+    const repeatCustomers = Object.keys(purchasesByCustomer).filter(customer => {
+        return Object.values(purchasesByCustomer[customer]).some(count => count > 1);
+    });
+
+    return repeatCustomers;
 }
