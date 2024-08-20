@@ -30,7 +30,7 @@ const Customer = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-          const response = await fetch("http://localhost:3001/api/customers/");
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/customers/`);
           const data = await response.json();
           processSalesData(data);
         };

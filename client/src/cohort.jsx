@@ -1,11 +1,11 @@
-import React,{useState,useEffect} from 'react'
+import React,{useState,useEffect,useRef} from 'react'
 import Highcharts from 'highcharts';
 import './CohortTable.css'
 const Cohort = () => {
     const [cohort,setCohort]=useState([])
     useEffect(() => {
         const fetchData = async () => {
-          const response = await fetch("http://localhost:3001/api/cohort");
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/cohort`);
           const data = await response.json();
           processSalesData(data);
         };
@@ -110,9 +110,12 @@ const CohortTable = ({ cohorts }) => {
   
   
   const CohortChart = ({ cohorts }) => {
-    useEffect(() => {
-      cohorts.forEach((cohort, index) => {
-        Highcharts.chart(`chart-container-${index}`, {
+    const [selectedCohort, setSelectedCohort] = useState(cohorts.length > 0 ? cohorts[0] : null);
+    const chartRef = useRef(null);
+  
+    const renderChart = (cohort) => {
+      if (cohort) {
+        Highcharts.chart(chartRef.current, {
           chart: {
             type: 'column'
           },
@@ -136,16 +139,49 @@ const CohortTable = ({ cohorts }) => {
             data: cohort.customers.map(customer => customer.total_spent)
           }]
         });
-      });
+      }
+    };
+  
+    useEffect(() => {
+      if (selectedCohort) {
+        renderChart(selectedCohort);
+      }
+    }, [selectedCohort]);
+  
+    useEffect(() => {
+      if (cohorts.length > 0) {
+        setSelectedCohort(cohorts[0]);
+        renderChart(cohorts[0]);
+      }
     }, [cohorts]);
   
     return (
       <div>
-        {cohorts.map((cohort, index) => (
-          <div key={index} id={`chart-container-${index}`} style={{ width: '100%', height: '400px' }}></div>
-        ))}
+        {cohorts.length > 0 ? (
+          <>
+            <select 
+              onChange={(e) => {
+                const selected = cohorts[e.target.value];
+                setSelectedCohort(selected);
+                renderChart(selected);
+              }} 
+              defaultValue={0}
+            >
+              {cohorts.map((cohort, index) => (
+                <option key={index} value={index}>
+                  {cohort.cohortMonth}
+                </option>
+              ))}
+            </select>
+            <div ref={chartRef} style={{ width: '100%', height: '400px' }}></div>
+          </>
+        ) : (
+          <p>Loading cohorts...</p>
+        )}
       </div>
     );
   };
   
   
+
+
